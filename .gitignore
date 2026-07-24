@@ -1,0 +1,22 @@
+# Node.js
+server/node_modules/
+server/.env
+
+# Android build output
+android/.gradle/
+android/build/
+android/app/build/
+android/local.properties
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temp
+*.zip
+*.tmp
