@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">黑马投票</string>
+    <string name="login">登录</string>
+    <string name="logout">退出登录</string>
+    <string name="username">账号</string>
+    <string name="password">密码</string>
+    <string name="file_number">文件编号</string>
+    <string name="vote_password">投票密码</string>
+    <string name="agree">同意</string>
+    <string name="oppose">反对</string>
+    <string name="abstain">弃权</string>
+    <string name="submit_vote">提交投票</string>
+    <string name="create_vote">发起投票</string>
+    <string name="join_vote">进入投票</string>
+</resources>
