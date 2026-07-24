@@ -12,7 +12,7 @@ const DB_CONFIG = {
 
 const DB_NAME = process.env.DB_NAME || 'meeting_vote';
 
-// 预设凭据（部署时可修改）
+// TFS 也是普通用户，登录后通过SA/NA密钥切身份
 const DEFAULT_SUPER_ADMIN = {
   username: 'TFS',
   password: 'TFS20241114',
@@ -100,9 +100,9 @@ async function init() {
     const hash = await bcrypt.hash(DEFAULT_SUPER_ADMIN.password, 10);
     await conn.execute(
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
-      [DEFAULT_SUPER_ADMIN.username, hash, 'super_admin']
+      [DEFAULT_SUPER_ADMIN.username, hash, 'user']
     );
-    console.log(`已创建超级管理员: ${DEFAULT_SUPER_ADMIN.username}`);
+    console.log(`已创建初始用户: ${DEFAULT_SUPER_ADMIN.username}（普通用户，通过SA密钥解锁超管）`);
     console.log(`  密码: ${DEFAULT_SUPER_ADMIN.password}`);
   } else {
     console.log(`超级管理员 "${DEFAULT_SUPER_ADMIN.username}" 已存在，跳过`);
