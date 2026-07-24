@@ -57,7 +57,7 @@ const unlockLimiter = rateLimit({
 
 // 路由
 app.use('/api/auth/login', loginLimiter);
-app.use('/api/admin/unlock', unlockLimiter);
+app.post('/api/admin/unlock', unlockLimiter);  // 仅 POST 受限，防止 GET 耗尽配额
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/admin', adminRoutes);
