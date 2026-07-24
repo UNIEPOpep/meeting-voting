@@ -2,7 +2,14 @@
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const JWT_SECRET = process.env.JWT_SECRET || 'heima_vote_jwt_secret_2026';
+const JWT_SECRET = process.env.JWT_SECRET;
+
+// 启动时校验密钥必须设置
+if (!JWT_SECRET) {
+  console.error('❌ 错误: 环境变量 JWT_SECRET 未设置！');
+  console.error('   请复制 .env.example 为 .env 并填入密钥');
+  process.exit(1);
+}
 
 // 验证 JWT 令牌（必须登录）
 function authRequired(req, res, next) {

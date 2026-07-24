@@ -42,6 +42,7 @@ class TokenManager(private val context: Context) {
             prefs[KEY_USERNAME] = username
             prefs[KEY_ROLE] = role
         }
+        RetrofitClient.updateCachedToken(token)
     }
 
     // 更新令牌（解锁管理员后）
@@ -49,6 +50,7 @@ class TokenManager(private val context: Context) {
         context.dataStore.edit { prefs ->
             prefs[KEY_TOKEN] = token
         }
+        RetrofitClient.updateCachedToken(token)
     }
 
     // 更新角色

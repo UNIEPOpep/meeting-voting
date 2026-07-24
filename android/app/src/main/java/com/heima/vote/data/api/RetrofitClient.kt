@@ -1,6 +1,7 @@
 package com.heima.vote.data.api
 
 import com.google.gson.Gson
+import com.heima.vote.BuildConfig
 import com.heima.vote.data.model.ErrorResponse
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
@@ -13,16 +14,29 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
 
-    // TODO: 部署到服务器后，替换为实际服务器地址
-    // 开发时用 10.0.2.2 代表电脑本机（安卓模拟器中）
-    // 真机测试时用电脑的局域网IP（如 192.168.x.x）
-    const val BASE_URL = "http://10.0.2.2:3000/"
+    // 开发/生产环境自动切换
+    val BASE_URL: String
+        get() = if (BuildConfig.DEBUG) {
+            "http://10.0.2.2:3000/"   // 模拟器
+        } else {
+            "https://your-server.com/"  // TODO: 部署后改为实际HTTPS地址
+        }
 
     private var tokenManager: TokenManager? = null
     private var apiService: ApiService? = null
 
+    // 缓存令牌，避免每次请求都阻塞读取 DataStore
+    @Volatile
+    private var cachedToken: String? = null
+
     fun init(tm: TokenManager) {
         tokenManager = tm
+        // 初始加载令牌
+        cachedToken = runBlocking { tm.tokenFlow.first() }
+    }
+
+    fun updateCachedToken(token: String?) {
+        cachedToken = token
     }
 
     fun getApiService(): ApiService {
@@ -33,23 +47,21 @@ object RetrofitClient {
     }
 
     private fun createApiService(): ApiService {
-        val tm = tokenManager
-
-        // 日志拦截器（调试用）
+        // 日志拦截器：仅调试模式打印，正式版只打印请求头不含请求体
         val loggingInterceptor = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
+            level = if (BuildConfig.DEBUG) {
+                HttpLoggingInterceptor.Level.HEADERS
+            } else {
+                HttpLoggingInterceptor.Level.NONE
+            }
         }
 
-        // 认证拦截器：自动附加JWT令牌
+        // 认证拦截器：自动附加JWT令牌（使用缓存）
         val authInterceptor = Interceptor { chain ->
             val original = chain.request()
-            val token = if (tm != null) {
-                runBlocking { tm.tokenFlow.first() }
-            } else null
-
-            val request = if (token != null) {
+            val request = if (cachedToken != null) {
                 original.newBuilder()
-                    .header("Authorization", "Bearer $token")
+                    .header("Authorization", "Bearer $cachedToken")
                     .build()
             } else {
                 original

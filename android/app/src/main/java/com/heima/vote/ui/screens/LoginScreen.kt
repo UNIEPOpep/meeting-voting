@@ -26,7 +26,7 @@ fun LoginScreen(authViewModel: AuthViewModel) {
     ) {
         // 标题
         Text(
-            text = "黑马投票",
+            text = "Meeting Voting",
             style = MaterialTheme.typography.headlineLarge,
             color = MaterialTheme.colorScheme.primary
         )

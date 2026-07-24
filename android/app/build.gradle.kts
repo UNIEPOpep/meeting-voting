@@ -13,6 +13,9 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0.0"
+
+        // 生产环境服务器地址
+        buildConfigField("String", "SERVER_URL", "\"https://your-server.com\"")
     }
 
     buildTypes {
@@ -33,6 +36,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     composeOptions {

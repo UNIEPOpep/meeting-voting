@@ -1,4 +1,4 @@
-# 投票APP - 产品设计文档
+# Meeting Voting - 产品设计文档
 
 ---
 

@@ -1,7 +1,7 @@
 {
-  "name": "heima-vote-server",
+  "name": "meeting-vote-server",
   "version": "1.0.0",
-  "description": "黑马投票 - 后端服务",
+  "description": "Meeting Voting - 后端服务",
   "main": "src/index.js",
   "scripts": {
     "start": "node src/index.js",
@@ -13,6 +13,8 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.0",
+    "express-rate-limit": "^8.6.0",
+    "helmet": "^8.3.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.11.0"
   }

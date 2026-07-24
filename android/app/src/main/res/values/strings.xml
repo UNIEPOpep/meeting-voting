@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">黑马投票</string>
+    <string name="app_name">Meeting Voting</string>
     <string name="login">登录</string>
     <string name="logout">退出登录</string>
     <string name="username">账号</string>
