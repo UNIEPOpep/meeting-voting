@@ -1,13 +1,14 @@
-// 数据库初始化脚本：创建表 + 预置超级管理员
+// 数据库初始化脚本：创建表 + 预置初始用户
 require('dotenv').config();
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');
 
+const dbPassword = process.env.DB_PASSWORD;
 const DB_CONFIG = {
   host: process.env.DB_HOST || 'localhost',
   port: process.env.DB_PORT || 3306,
   user: process.env.DB_USER || 'root',
-  password: process.env.DB_PASSWORD || '',
+  password: dbPassword || '',
 };
 
 const DB_NAME = process.env.DB_NAME || 'meeting_vote';
@@ -90,9 +91,9 @@ async function init() {
 
   // 5. 初始化默认数据
 
-  // 检查超管是否已存在
+  // 检查 TFS 是否已存在
   const [rows] = await conn.execute(
-    'SELECT id FROM users WHERE username = ?',
+    'SELECT id, role FROM users WHERE username = ?',
     [DEFAULT_SUPER_ADMIN.username]
   );
 
@@ -102,10 +103,15 @@ async function init() {
       'INSERT INTO users (username, password_hash, role) VALUES (?, ?, ?)',
       [DEFAULT_SUPER_ADMIN.username, hash, 'user']
     );
-    console.log(`已创建初始用户: ${DEFAULT_SUPER_ADMIN.username}（普通用户，通过SA密钥解锁超管）`);
-    console.log(`  密码: ${DEFAULT_SUPER_ADMIN.password}`);
+    console.log(`已创建初始用户: ${DEFAULT_SUPER_ADMIN.username} (角色: user)`);
   } else {
-    console.log(`超级管理员 "${DEFAULT_SUPER_ADMIN.username}" 已存在，跳过`);
+    // 确保已存在的 TFS 角色为 user（防止旧版本遗留的 super_admin）
+    if (rows[0].role !== 'user') {
+      await conn.execute('UPDATE users SET role = ? WHERE username = ?', ['user', DEFAULT_SUPER_ADMIN.username]);
+      console.log(`已将 ${DEFAULT_SUPER_ADMIN.username} 角色从 ${rows[0].role} 重置为 user`);
+    } else {
+      console.log(`初始用户 "${DEFAULT_SUPER_ADMIN.username}" 已存在，跳过`);
+    }
   }
 
   // 初始化 SA 解锁密钥（→ super_admin）
@@ -119,7 +125,6 @@ async function init() {
       'INSERT INTO system_config (config_key, config_value) VALUES (?, ?)',
       ['sa_secret_key', keyHash]
     );
-    console.log(`已设置超管解锁密钥: ${DEFAULT_SA_KEY}`);
   }
 
   // 初始化 NA 解锁密钥（→ admin）
@@ -133,11 +138,20 @@ async function init() {
       'INSERT INTO system_config (config_key, config_value) VALUES (?, ?)',
       ['na_secret_key', keyHash]
     );
-    console.log(`已设置普管解锁密钥: ${DEFAULT_NA_KEY}`);
   }
 
   await conn.end();
   console.log('\n✅ 数据库初始化完成！');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('⚠️  以下凭据仅首次初始化时显示，请妥善保存');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log(`   初始用户: ${DEFAULT_SUPER_ADMIN.username}`);
+  console.log(`   登录密码: ${DEFAULT_SUPER_ADMIN.password}`);
+  console.log(`   SA 密钥: ${DEFAULT_SA_KEY}  (解锁超管)`);
+  console.log(`   NA 密钥: ${DEFAULT_NA_KEY}  (解锁普管)`);
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+  console.log('⚠️  生产环境请立即修改以上所有凭据！');
+  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
 init().catch((err) => {
