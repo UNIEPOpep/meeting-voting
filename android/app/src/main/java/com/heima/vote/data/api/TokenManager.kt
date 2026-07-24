@@ -25,14 +25,9 @@ class TokenManager(private val context: Context) {
         prefs[KEY_TOKEN]
     }
 
-    // 获取当前令牌（同步读取）
+    // 获取当前令牌
     suspend fun getToken(): String? {
-        var token: String? = null
-        context.dataStore.data.collect { prefs ->
-            token = prefs[KEY_TOKEN]
-        }
-        // 简化处理，使用runBlocking
-        return token
+        return context.dataStore.data.first()[KEY_TOKEN]
     }
 
     // 保存登录信息

@@ -47,8 +47,14 @@ object RetrofitClient {
     }
 
     private fun createApiService(): ApiService {
-        // 日志拦截器：仅调试模式打印，正式版只打印请求头不含请求体
-        val loggingInterceptor = HttpLoggingInterceptor().apply {
+        // 日志拦截器：调试模式仅打印基本信息，正式版关闭
+        val loggingInterceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
+            override fun log(message: String) {
+                // 过滤掉 Authorization 头，防止令牌泄露到 logcat
+                if (message.contains("Authorization", ignoreCase = true)) return
+                android.util.Log.d("MeetingVote", message)
+            }
+        }).apply {
             level = if (BuildConfig.DEBUG) {
                 HttpLoggingInterceptor.Level.HEADERS
             } else {
