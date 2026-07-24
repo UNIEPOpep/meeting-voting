@@ -10,15 +10,16 @@ const DB_CONFIG = {
   password: process.env.DB_PASSWORD || '',
 };
 
-const DB_NAME = process.env.DB_NAME || 'heima_vote';
+const DB_NAME = process.env.DB_NAME || 'meeting_vote';
 
-// 预设的超级管理员账号和密钥
+// 随机生成强密码（首次运行）
+const crypto = require('crypto');
 const DEFAULT_SUPER_ADMIN = {
   username: 'superadmin',
-  password: 'admin123456',   // 首次登录后请修改
+  password: crypto.randomBytes(8).toString('hex'),   // 随机生成16位密码
 };
 
-const DEFAULT_SECRET_KEY = 'admin888';  // 默认管理解锁密钥
+const DEFAULT_SECRET_KEY = crypto.randomBytes(6).toString('hex');  // 随机生成12位密钥
 
 async function init() {
   // 1. 连接 MySQL（不指定数据库，先建库）

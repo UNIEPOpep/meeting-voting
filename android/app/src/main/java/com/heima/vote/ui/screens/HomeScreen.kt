@@ -28,7 +28,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("黑马投票") },
+                title = { Text("Meeting Voting") },
                 actions = {
                     // 管理员入口
                     if (authState.role == "admin" || authState.role == "super_admin") {
