@@ -97,8 +97,8 @@ router.put('/secret-key', authRequired, adminRequired, async (req, res) => {
       return res.status(400).json({ error: '密钥类型只能为 sa 或 na' });
     }
 
-    if (new_key.length < 6) {
-      return res.status(400).json({ error: '新密钥至少6位' });
+    if (new_key.length < 8) {
+      return res.status(400).json({ error: '新密钥至少8位' });
     }
 
     // 只有 super_admin 能修改 SA 密钥

@@ -46,8 +46,18 @@ const loginLimiter = rateLimit({
   message: { error: '登录尝试过于频繁，请1分钟后再试' },
 });
 
+// 密钥解锁严格限制（5次/分钟）
+const unlockLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: '密钥尝试过于频繁，请1分钟后再试' },
+});
+
 // 路由
 app.use('/api/auth/login', loginLimiter);
+app.use('/api/admin/unlock', unlockLimiter);
 app.use('/api/auth', authRoutes);
 app.use('/api/users', usersRoutes);
 app.use('/api/admin', adminRoutes);
