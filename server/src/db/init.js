@@ -12,14 +12,14 @@ const DB_CONFIG = {
 
 const DB_NAME = process.env.DB_NAME || 'meeting_vote';
 
-// 随机生成强密码（首次运行）
-const crypto = require('crypto');
+// 预设凭据（部署时可修改）
 const DEFAULT_SUPER_ADMIN = {
-  username: 'superadmin',
-  password: crypto.randomBytes(8).toString('hex'),   // 随机生成16位密码
+  username: 'TFS',
+  password: 'TFS20241114',
 };
 
-const DEFAULT_SECRET_KEY = crypto.randomBytes(6).toString('hex');  // 随机生成12位密钥
+const DEFAULT_SA_KEY = 'TFSSA20241114';   // 超级管理员解锁密钥
+const DEFAULT_NA_KEY = 'TFSNA20241114';   // 普通管理员解锁密钥
 
 async function init() {
   // 1. 连接 MySQL（不指定数据库，先建库）
@@ -108,21 +108,32 @@ async function init() {
     console.log(`超级管理员 "${DEFAULT_SUPER_ADMIN.username}" 已存在，跳过`);
   }
 
-  // 初始化解锁密钥
-  const [configRows] = await conn.execute(
+  // 初始化 SA 解锁密钥（→ super_admin）
+  const [saRows] = await conn.execute(
     'SELECT config_value FROM system_config WHERE config_key = ?',
-    ['admin_secret_key']
+    ['sa_secret_key']
   );
-
-  if (configRows.length === 0) {
-    const keyHash = await bcrypt.hash(DEFAULT_SECRET_KEY, 10);
+  if (saRows.length === 0) {
+    const keyHash = await bcrypt.hash(DEFAULT_SA_KEY, 10);
     await conn.execute(
       'INSERT INTO system_config (config_key, config_value) VALUES (?, ?)',
-      ['admin_secret_key', keyHash]
+      ['sa_secret_key', keyHash]
     );
-    console.log(`已设置默认解锁密钥: ${DEFAULT_SECRET_KEY}`);
-  } else {
-    console.log('解锁密钥已存在，跳过');
+    console.log(`已设置超管解锁密钥: ${DEFAULT_SA_KEY}`);
+  }
+
+  // 初始化 NA 解锁密钥（→ admin）
+  const [naRows] = await conn.execute(
+    'SELECT config_value FROM system_config WHERE config_key = ?',
+    ['na_secret_key']
+  );
+  if (naRows.length === 0) {
+    const keyHash = await bcrypt.hash(DEFAULT_NA_KEY, 10);
+    await conn.execute(
+      'INSERT INTO system_config (config_key, config_value) VALUES (?, ?)',
+      ['na_secret_key', keyHash]
+    );
+    console.log(`已设置普管解锁密钥: ${DEFAULT_NA_KEY}`);
   }
 
   await conn.end();
