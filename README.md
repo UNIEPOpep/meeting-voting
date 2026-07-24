@@ -28,9 +28,9 @@
 ```
 所有用户登录 → 普通用户（只能投票）
        │
-       ├── 输入 SA 密钥 (TFSSA20241114) → 超级管理员（创建用户/改密钥/看全部汇总）
+       ├── 输入 SA 密钥 () → 超级管理员（创建用户/改密钥/看全部汇总）
        │
-       └── 输入 NA 密钥 (TFSNA20241114) → 普通管理员（发起投票/看自己汇总）
+       └── 输入 NA 密钥 () → 普通管理员（发起投票/看自己汇总）
 
 退出登录 / 关闭APP → 权限自动失效，恢复为普通用户
 ```
@@ -91,10 +91,10 @@ npm run db:init
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⚠️  以下凭据仅首次初始化时显示，请妥善保存
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   初始用户: TFS
-   登录密码: TFS20241114
-   SA 密钥: TFSSA20241114  (解锁超管)
-   NA 密钥: TFSNA20241114  (解锁普管)
+   初始用户: 
+   登录密码: 
+   SA 密钥:   (解锁超管)
+   NA 密钥:   (解锁普管)
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
@@ -135,12 +135,12 @@ echo "sdk.dir=你的Android SDK路径" > local.properties
 
 ```json
 // Request
-{ "username": "TFS", "password": "TFS20241114" }
+{ "username": "", "password": "" }
 
 // Response 200
 {
   "token": "eyJhbG...",
-  "user": { "id": 1, "username": "TFS", "role": "user" }
+  "user": { "id": 1, "username": "", "role": "user" }
 }
 
 // Response 401
@@ -151,7 +151,7 @@ echo "sdk.dir=你的Android SDK路径" > local.properties
 
 ```json
 // Response 200
-{ "user": { "id": 1, "username": "TFS", "role": "user", "created_at": "..." } }
+{ "user": { "id": 1, "username": "", "role": "user", "created_at": "..." } }
 ```
 
 ### 管理接口
@@ -160,10 +160,10 @@ echo "sdk.dir=你的Android SDK路径" > local.properties
 
 ```json
 // Request — SA 密钥 → 超管
-{ "secret_key": "TFSSA20241114" }
+{ "secret_key": "" }
 
 // Request — NA 密钥 → 普管
-{ "secret_key": "TFSNA20241114" }
+{ "secret_key": "" }
 
 // Response 200
 {
@@ -207,7 +207,7 @@ echo "sdk.dir=你的Android SDK路径" > local.properties
 
 ```json
 // Response 200
-{ "users": [{ "id": 1, "username": "TFS", "role": "user", "created_at": "..." }] }
+{ "users": [{ "id": 1, "username": "", "role": "user", "created_at": "..." }] }
 ```
 
 ### 投票接口
@@ -290,7 +290,7 @@ echo "sdk.dir=你的Android SDK路径" > local.properties
   "deadline": "2026-12-31T18:00:00.000Z",
   "allow_abstain": true,
   "allow_change_vote": false,
-  "created_by": "TFS",
+  "created_by": "",
   "created_at": "2026-07-24T...",
   "summary": {
     "total": 20,
